@@ -294,6 +294,10 @@ namespace BeeperPiano
             else if (key == ConsoleKey.O) { PlayKeys("C#5"); Actions(); }
             else if (key == ConsoleKey.L) { PlayKeys("D5"); Actions(); }
             else if (key == ConsoleKey.P) { PlayKeys("D#5"); Actions(); }
+            else if (key == ConsoleKey.Oem1) { PlayKeys("E5"); Actions(); }
+            else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
+            else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
+            else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
             else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; Actions(); }
             else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
             else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
