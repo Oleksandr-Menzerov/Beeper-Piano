@@ -248,8 +248,8 @@ namespace BeeperPiano
         "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
         "1-9 keys set pich shift in octavas.\n" +
         "UpArrow and DownArrow keys adjust pich shift in halftones.\n" +
-        "Num 0 - Num 9 keys set note durations as 5, 10, 100, 200, 300, 400, 500, 600, 700, 800.\n" +
-        "Num Plus and Num Minus keys adjust durations by 1 millisecond.");
+        "Num 0 - Num 9 keys set note duration as 5, 10, 100, 200, 300, 400, 500, 600, 700, 800.\n" +
+        "Num Plus and Num Minus keys adjust duration.");
             Console.WriteLine(
         "F1 key for information.");
             Console.WriteLine(
