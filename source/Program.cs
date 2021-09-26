@@ -247,9 +247,9 @@ namespace BeeperPiano
             Console.WriteLine(
         "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
         "1-9 keys set pich shift in octavas.\n" +
-        "UpArrow and DownArrow keys adjust pich shift in halftones.\n" +
+        "Minus and Plus keys adjust pich shift in halftones.\n" +
         "Num 0 - Num 9 keys set note duration as 5, 10, 100, 200, 300, 400, 500, 600, 700, 800.\n" +
-        "Num Plus and Num Minus keys adjust duration.");
+        "UpArrow and DownArrow keys adjust duration.");
             Console.WriteLine(
         "F1 key for information.");
             Console.WriteLine(
@@ -317,19 +317,19 @@ namespace BeeperPiano
             else if (key == ConsoleKey.NumPad7) { Duration = 600; Actions(); }
             else if (key == ConsoleKey.NumPad8) { Duration = 700; Actions(); }
             else if (key == ConsoleKey.NumPad9) { Duration = 800; Actions(); }
-            else if (key == ConsoleKey.DownArrow)
+            else if (key == ConsoleKey.OemMinus)
             { if (Pitch > -30) { Pitch--;
                     Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     Menu(); }
                 else { Actions(); }
             }
-            else if (key == ConsoleKey.UpArrow)
+            else if (key == ConsoleKey.OemPlus)
             { if (Pitch < 60) { Pitch++;
                     Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     Menu(); }
                 else { Actions(); }
             }
-            else if (key == ConsoleKey.Subtract)
+            else if (key == ConsoleKey.DownArrow)
             {
                 if (Duration > 800)
                 {
@@ -357,7 +357,7 @@ namespace BeeperPiano
                 }
                 else { Actions(); }
             }
-            else if (key == ConsoleKey.Add)
+            else if (key == ConsoleKey.UpArrow)
             {
                 if (Duration < 25)
                 {
