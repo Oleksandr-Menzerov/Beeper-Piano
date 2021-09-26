@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -90,6 +90,8 @@ namespace BeeperPiano
                 else
                 {
                     int freq = GetFrequency(toneName);
+                    if (freq < 37) { freq = 37; }
+                    if (freq > 32767) { freq = 32767; }
                     Console.Beep(freq, duration);
                 }
             }
@@ -106,6 +108,8 @@ namespace BeeperPiano
                     int freq = int.Parse(freqString[1]);
                     string[] duraString = halfs[1].Split(')');
                     int duration = int.Parse(duraString[0]);
+                    if (freq < 37) { freq = 37; }
+                    if (freq > 32767) { freq = 32767; }
                     Console.Beep(freq, duration);
                 }
                 else
@@ -132,6 +136,8 @@ namespace BeeperPiano
             }
 
             int freq = GetFrequency(note);
+            if (freq < 37) { freq = 37; }
+            if (freq > 32767) { freq = 32767; }
             Console.Beep(freq, Duration);
 
             if (Recording)
@@ -145,6 +151,8 @@ namespace BeeperPiano
                     stopWatch.Start();
                 }
                 if (recDuration > 2000) { recDuration = 2000; }
+                if (freq < 37) { freq = 37; }
+                if (freq > 32767) { freq = 32767; }
                 string newNote = new("Console.Beep("+ freq+", " + recDuration + ");");
                 newSong.Add(newNote);
                 if (!DurationTimer)
