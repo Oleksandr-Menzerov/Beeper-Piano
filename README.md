@@ -1,5 +1,5 @@
 # Beeper-Piano
-Simple console app that turns PC keyboard in a music keyboard for playing music via Console.Beep with recording and reproducing functions.
+Simple console app that turns PC keyboard to a music keyboard for playing music via Console.Beep with recording and reproducing functions.
 
                 You can play beeps on your keyboard and record Console.Beep commands to the file.
                 
