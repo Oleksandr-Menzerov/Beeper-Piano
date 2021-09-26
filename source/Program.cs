@@ -21,6 +21,13 @@ namespace BeeperPiano
         static readonly Stopwatch stopWatch = new();
         public static readonly string startMelody = new("C5 1/8., B4 1/8., A4 1/8., G4 1/8., F4 1/8., E4 1/8., D4 1/8., C4 1/4, pause 1/4, C5 1/2");
 
+        public static void ErrorMessage(string error)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(error);
+            Console.ResetColor();
+            Console.Beep();
+        }
         public static int GetFrequency(string toneName)
         {
             double toneIndex = 0;
@@ -86,7 +93,6 @@ namespace BeeperPiano
                     Console.Beep(freq, duration);
                 }
             }
-            Console.WriteLine("Playing ends");
         }
 
         public static void PlayBeeps(List<string> song)
@@ -110,7 +116,6 @@ namespace BeeperPiano
                     Thread.Sleep(duration);
                 }
             }
-            Console.WriteLine("Playing ends");
         }
 
         public static void PlayKeys(string note)
@@ -121,6 +126,7 @@ namespace BeeperPiano
                     stopWatch.Stop();
                     int recDuration = (int)stopWatch.ElapsedMilliseconds;
                     stopWatch.Reset();
+                    if (recDuration > 2000) { recDuration = 2000; }
                     string newNote = new("Thread.Sleep("+recDuration+");");
                     newSong.Add(newNote);
             }
@@ -192,10 +198,7 @@ namespace BeeperPiano
             else if (key == ConsoleKey.S) { SaveNewSong(); }
             else if (key == ConsoleKey.Q)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Are you shure you want to quit? All unsaved data will be lost! Type Y or N");
-                Console.ResetColor();
-                Console.Beep();
+                ErrorMessage("Are you shure you want to quit? All unsaved data will be lost! Type Y or N");
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "y")
                 { Menu(); }
@@ -207,7 +210,6 @@ namespace BeeperPiano
                 }
             }
         }
-
         public static void SaveNewSong()
         {
             Console.WriteLine("Type a name of your song:");
@@ -217,19 +219,12 @@ namespace BeeperPiano
             {
                 if (name.Contains(invalidChar))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Name contains not allowed symbols! Please, chose another one.");
-                    Console.ResetColor();
-                    Console.Beep();
+                    ErrorMessage("Name contains not allowed symbols! Please, chose another one.");
                     NewSongMenu();
                 }
-
                 else if (File.Exists(name + ".beepersong"))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("This file name is currently exist! Please, chose another one.");
-                    Console.ResetColor();
-                    Console.Beep();
+                    ErrorMessage("This file name is currently exist! Please, chose another one.");
                     NewSongMenu();
                 }
                 else 
@@ -240,7 +235,6 @@ namespace BeeperPiano
                 Menu();
             }
         }
-
         public static void Menu() {
             Console.WriteLine(
         "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
@@ -265,7 +259,6 @@ namespace BeeperPiano
         "Press Escape to quit.\n");
             Actions();
         }
-
         public static void Actions()
         {
             ConsoleKey key = Console.ReadKey(true).Key;
@@ -318,14 +311,12 @@ namespace BeeperPiano
                     Menu(); }
                 else { Actions(); }
             }
-
             else if (key == ConsoleKey.UpArrow)
             { if (Pitch < 60) { Pitch++;
                     Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     Menu(); }
                 else { Actions(); }
             }
-
             else if (key == ConsoleKey.Subtract)
             {
                 if (Duration > 800)
@@ -334,21 +325,18 @@ namespace BeeperPiano
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-
                 else if(Duration > 500)
                 {
                     Duration -= 50;
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-
                 else if (Duration > 200)
                 {
                     Duration -= 10;
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-
                 else if (Duration > 2)
                 {
                     Duration--;
@@ -357,7 +345,6 @@ namespace BeeperPiano
                 }
                 else { Actions(); }
             }
-
             else if (key == ConsoleKey.Add)
             {
                 if (Duration < 25)
@@ -400,7 +387,6 @@ namespace BeeperPiano
             }
             else { Actions(); }
         }
-
         public static void SwitchNotesAppearing() {
             NotesAppear = !NotesAppear;
             if (NotesAppear) { Console.WriteLine("Notes apearing is turned on.\n"); }
@@ -414,7 +400,6 @@ namespace BeeperPiano
             else { Console.WriteLine("Stacatto recording is turned on.\n"); }
             Menu();
         }
-
         public static void SetSoundDuration()
         {
             Console.WriteLine("Current sound duration is " + Duration + ". Type new duration (from 2 to 1000) and press Enter:");
@@ -428,14 +413,11 @@ namespace BeeperPiano
             }
             else
             {
+                ErrorMessage("Invalid data!");
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid data!");
-                Console.ResetColor();
-                Console.Beep();
                 SetSoundDuration();
             }
         }
-
         public static void PlayerMenu()
         {
             Console.WriteLine(
@@ -445,7 +427,6 @@ namespace BeeperPiano
            "Q Quit to the Beeper Piano");
             PlayerActions();
         }
-
         public static void PlayerActions()
         {
             ConsoleKey key = Console.ReadKey(true).Key;
@@ -455,7 +436,6 @@ namespace BeeperPiano
             else if (key == ConsoleKey.S) { SetUpPitchShift(); }
             else { PlayerActions(); }
         }
-
         public static void SetUpTempo() 
         {
             Console.WriteLine("Current tempo is " + Tempo);
@@ -470,14 +450,10 @@ namespace BeeperPiano
                 PlayerMenu();
             }
             else {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid data!");
-                Console.ResetColor();
-                Console.Beep();
+                ErrorMessage("Invalid data!");
                 SetUpTempo(); 
             }
         }
-
         public static void SetUpPitchShift()
         {
             Console.WriteLine("Current pich shift is " + Pitch);
@@ -498,7 +474,6 @@ namespace BeeperPiano
                 SetUpPitchShift();
             }
         }
-
         public static void PlaySong()
         {
             string path = Directory.GetCurrentDirectory();
@@ -519,20 +494,14 @@ namespace BeeperPiano
                 Console.WriteLine(filename);
                 if (!File.Exists(filename))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Song with name " + songName + " is not exist! Chose another one!");
-                    Console.ResetColor();
-                    Console.Beep();
+                    ErrorMessage("Song with name " + songName + " is not exist! Chose another one!");
                     PlaySong();
                 }
                 else
                 {
                     string[] readSong = File.ReadAllLines(filename);
                     if (readSong.Length == 0) {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("File " + songName + " is empty! Chose another one!");
-                        Console.ResetColor();
-                        Console.Beep();
+                        ErrorMessage("File " + songName + " is empty! Chose another one!");
                         PlaySong();
                         }
                     else if (readSong[0].Substring(1, 1) == "o")
@@ -542,14 +511,10 @@ namespace BeeperPiano
                         {
                             Console.WriteLine("Playing " + songName);
                             PlayBeeps(playSong);
-                            Console.WriteLine("Playing ended");
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("File " + songName + " is invalid! Chose another one!");
-                            Console.ResetColor();
-                            Console.Beep();
+                            ErrorMessage("File " + songName + " is invalid! Chose another one!");
                             PlaySong();
                         }
                     }
@@ -565,23 +530,17 @@ namespace BeeperPiano
                         {
                             Console.WriteLine("Playing " + songName);
                             PlayBeeps(playSong);
-                            Console.WriteLine("Playing ended");
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("File " + songName + " is invalid! Chose another one!");
-                            Console.ResetColor();
-                            Console.Beep();
+                            ErrorMessage("File " + songName + " is invalid! Chose another one!");
                             PlaySong();
                         }
                     }
-
                     PlayerMenu();
                 }
             }
         }
-
         static bool IsFileValid(List<string> song)
         {
                 foreach (string note in song)
@@ -611,7 +570,6 @@ namespace BeeperPiano
                     }
             return true;
         }
-
         static bool IsFileValid(string song)
         {
             try
@@ -632,7 +590,6 @@ namespace BeeperPiano
             catch { return false; }
             return true;
         }
-
         public static void Information()
         {
             Console.WriteLine(
@@ -648,7 +605,6 @@ namespace BeeperPiano
                 "Press Escape to return to the Beeper Piano.\n");
             InformationActions();
         }
-
         public static void InformationActions()
         {
             ConsoleKey key = Console.ReadKey(true).Key;
