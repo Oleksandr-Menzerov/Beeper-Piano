@@ -238,13 +238,11 @@ namespace BeeperPiano
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "y")
                 { Menu(); }
-                else if (answer.ToLower() == "n")
-                { NewSongMenu(); }
-                else
-                {
-                    NewSongMenu();
-                }
+                else { NewSongMenu(); }
             }
+            else
+            { NewSongActions(); }
+
         }
         public static void SaveNewSong()
         {
