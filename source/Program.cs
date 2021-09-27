@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -58,7 +58,7 @@ namespace BeeperPiano
 
         public static int GetFrequency(int percNum)
         {
-            double dobleFreg = 85 * Math.Pow(2, percNum*0.9);
+            double dobleFreg = 100 * Math.Pow(2, percNum*0.63);
             return (int)Math.Round(dobleFreg);
         }
 
@@ -274,7 +274,7 @@ namespace BeeperPiano
         public static void Menu() {
             Console.WriteLine(
         "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
-        "Z-M for percussions.\n" +
+        "Spacebar, Enter and Z-M for percussions.\n" +
         "1-9 keys set pich shift in octavas.\n" +
         "Minus and Plus keys adjust pich shift in halftones.\n" +
         "Num 0 - Num 9 keys set note duration as 5, 10, 100, 200, 300, 400, 500, 600, 700, 800.\n" +
@@ -330,16 +330,18 @@ namespace BeeperPiano
             else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
             else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
             else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
-            else if (key == ConsoleKey.Z) { PlayKeys(0); Actions(); }
-            else if (key == ConsoleKey.X) { PlayKeys(1); Actions(); }
-            else if (key == ConsoleKey.C) { PlayKeys(2); Actions(); }
-            else if (key == ConsoleKey.V) { PlayKeys(3); Actions(); }
-            else if (key == ConsoleKey.B) { PlayKeys(4); Actions(); }
-            else if (key == ConsoleKey.N) { PlayKeys(5); Actions(); }
-            else if (key == ConsoleKey.M) { PlayKeys(6); Actions(); }
-            else if (key == ConsoleKey.OemComma) { PlayKeys(7); Actions(); }
-            else if (key == ConsoleKey.OemPeriod) { PlayKeys(8); Actions(); }
-            else if (key == ConsoleKey.Oem2) { PlayKeys(9); Actions(); }
+            else if (key == ConsoleKey.Spacebar) { PlayKeys(0); Actions(); }
+            else if (key == ConsoleKey.Z) { PlayKeys(1); Actions(); }
+            else if (key == ConsoleKey.X) { PlayKeys(2); Actions(); }
+            else if (key == ConsoleKey.C) { PlayKeys(3); Actions(); }
+            else if (key == ConsoleKey.V) { PlayKeys(4); Actions(); }
+            else if (key == ConsoleKey.B) { PlayKeys(5); Actions(); }
+            else if (key == ConsoleKey.N) { PlayKeys(6); Actions(); }
+            else if (key == ConsoleKey.M) { PlayKeys(7); Actions(); }
+            else if (key == ConsoleKey.OemComma) { PlayKeys(8); Actions(); }
+            else if (key == ConsoleKey.OemPeriod) { PlayKeys(9); Actions(); }
+            else if (key == ConsoleKey.Oem2) { PlayKeys(10); Actions(); }
+            else if (key == ConsoleKey.Enter) { PlayKeys(11); Actions(); }
             else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; Actions(); }
             else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
             else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
