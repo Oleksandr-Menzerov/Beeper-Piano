@@ -59,6 +59,7 @@ namespace BeeperPiano
 
         public static int GetFrequency(ConsoleKey key)
         {
+            if (!IsQuadtone) { return 0; }
             double toneIndex;
             if (key == ConsoleKey.Q)
             { toneIndex = 0; }
@@ -108,7 +109,17 @@ namespace BeeperPiano
             { toneIndex = 23; }
             else if (key == ConsoleKey.Oem5)
             { toneIndex = 24; }
-            else { return 0; }
+            else {
+                if (key == ConsoleKey.D1) { Pitch = -72; }
+                else if (key == ConsoleKey.D2) { Pitch = -48; }
+                else if (key == ConsoleKey.D3) { Pitch = -24; }
+                else if (key == ConsoleKey.D5) { Pitch = 24; }
+                else if (key == ConsoleKey.D6) { Pitch = 48; }
+                else if (key == ConsoleKey.D7) { Pitch = 72; }
+                else if (key == ConsoleKey.D8) { Pitch = 96; }
+                else if (key == ConsoleKey.D9) { Pitch = 120; }
+                return 0;
+            }
 
             toneIndex += Pitch;
             double power = toneIndex / 24;
@@ -399,7 +410,7 @@ namespace BeeperPiano
             else if (key == ConsoleKey.F5) { StartRec(); }
             else if (key == ConsoleKey.F6) { StopRec(); }
             else if (key == ConsoleKey.F9) { PlayerMenu(); }
-            else if (key == ConsoleKey.F12) { IsQuadtone = !IsQuadtone; Actions(); }
+            else if (key == ConsoleKey.F12) { IsQuadtone = !IsQuadtone; Menu(); }
 
             else if (key == ConsoleKey.Spacebar) { PlayKeys(0); Actions(); }
             else if (key == ConsoleKey.Z) { PlayKeys(1); Actions(); }
@@ -413,16 +424,7 @@ namespace BeeperPiano
             else if (key == ConsoleKey.OemPeriod) { PlayKeys(9); Actions(); }
             else if (key == ConsoleKey.Oem2) { PlayKeys(10); Actions(); }
             else if (key == ConsoleKey.Enter) { PlayKeys(11); Actions(); }
-
             else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; Actions(); }
-            else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
-            else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
-            else if (key == ConsoleKey.D3) { Pitch = -12; Actions(); }
-            else if (key == ConsoleKey.D5) { Pitch = 12; Actions(); }
-            else if (key == ConsoleKey.D6) { Pitch = 24; Actions(); }
-            else if (key == ConsoleKey.D7) { Pitch = 36; Actions(); }
-            else if (key == ConsoleKey.D8) { Pitch = 48; Actions(); }
-            else if (key == ConsoleKey.D9) { Pitch = 60; Actions(); }
             else if (key == ConsoleKey.NumPad0) { Duration = 5; Actions(); }
             else if (key == ConsoleKey.NumPad1) { Duration = 10; Actions(); }
             else if (key == ConsoleKey.NumPad2) { Duration = 100; Actions(); }
@@ -543,6 +545,15 @@ namespace BeeperPiano
                 else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
                 else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
                 else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
+                else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
+                else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
+                else if (key == ConsoleKey.D3) { Pitch = -12; Actions(); }
+                else if (key == ConsoleKey.D5) { Pitch = 12; Actions(); }
+                else if (key == ConsoleKey.D6) { Pitch = 24; Actions(); }
+                else if (key == ConsoleKey.D7) { Pitch = 36; Actions(); }
+                else if (key == ConsoleKey.D8) { Pitch = 48; Actions(); }
+                else if (key == ConsoleKey.D9) { Pitch = 60; Actions(); }
+                else { Actions(); }
             }
 
             else { PlayKeys(key); }
