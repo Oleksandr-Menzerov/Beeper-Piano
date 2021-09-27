@@ -66,49 +66,49 @@ namespace BeeperPiano
             else if (key == ConsoleKey.A)
             { toneIndex = 1; }
             else if (key == ConsoleKey.W)
-            { toneIndex = 3; }
+            { toneIndex = 2; }
             else if (key == ConsoleKey.S)
-            { toneIndex = 4; }
+            { toneIndex = 3; }
             else if (key == ConsoleKey.E)
-            { toneIndex = 5; }
+            { toneIndex = 4; }
             else if (key == ConsoleKey.D)
-            { toneIndex = 6; }
+            { toneIndex = 5; }
             else if (key == ConsoleKey.R)
-            { toneIndex = 7; }
+            { toneIndex = 6; }
             else if(key == ConsoleKey.F)
-            { toneIndex = 8; }
+            { toneIndex = 7; }
             else if (key == ConsoleKey.T)
-            { toneIndex = 9; }
+            { toneIndex = 8; }
             else if (key == ConsoleKey.G)
-            { toneIndex = 10; }
+            { toneIndex = 9; }
             else if (key == ConsoleKey.Y)
-            { toneIndex = 11; }
+            { toneIndex = 10; }
             else if (key == ConsoleKey.H)
-            { toneIndex = 12; }
+            { toneIndex = 11; }
             else if (key == ConsoleKey.U)
-            { toneIndex = 13; }
+            { toneIndex = 12; }
             else if (key == ConsoleKey.J)
-            { toneIndex = 14; }
+            { toneIndex = 12; }
             else if (key == ConsoleKey.I)
-            { toneIndex = 15; }
+            { toneIndex = 14; }
             else if (key == ConsoleKey.K)
-            { toneIndex = 16; }
+            { toneIndex = 15; }
             else if (key == ConsoleKey.O)
-            { toneIndex = 17; }
+            { toneIndex = 16; }
             else if (key == ConsoleKey.L)
-            { toneIndex = 18; }
+            { toneIndex = 17; }
             else if (key == ConsoleKey.P)
-            { toneIndex = 19; }
+            { toneIndex = 18; }
             else if (key == ConsoleKey.Oem1)
-            { toneIndex = 20; }
+            { toneIndex = 19; }
             else if (key == ConsoleKey.Oem4)
-            { toneIndex = 21; }
+            { toneIndex = 20; }
             else if (key == ConsoleKey.Oem7)
-            { toneIndex = 22; }
+            { toneIndex = 21; }
             else if (key == ConsoleKey.Oem6)
-            { toneIndex = 23; }
+            { toneIndex = 22; }
             else if (key == ConsoleKey.Oem5)
-            { toneIndex = 24; }
+            { toneIndex = 23; }
             else {
                 if (key == ConsoleKey.D1) { Pitch = -72; }
                 else if (key == ConsoleKey.D2) { Pitch = -48; }
@@ -121,7 +121,7 @@ namespace BeeperPiano
                 return 0;
             }
 
-            toneIndex += Pitch;
+            toneIndex += Pitch-19;
             double power = toneIndex / 24;
             double dobleFreg = etalonFrequency * Math.Pow(2, power);
             return (int)Math.Round(dobleFreg);
@@ -380,8 +380,11 @@ namespace BeeperPiano
         "F1 key for information.");
             Console.WriteLine(
         "F2 key for adjust sound duration. Current sound duration is " + Duration + ".");
+            if (!IsQuadtone)
+            {
             Console.WriteLine(
         "F3 key for turn on/off notes names appearing in console. Current note appearing is " + IsNotesAppear + ".");
+            }
             Console.WriteLine(
         "F4 key to turn on/off stacatto recording. Now stacatto is " + IsStacatto + ".");
             if (!IsRecording)
