@@ -18,6 +18,7 @@ namespace BeeperPiano
         public static bool IsStacatto { get; set; }
         public static bool IsPause { get; set; }
         public static bool IsRecording { get; set; }
+        public static bool IsQuadtone { get; set; }
         public static readonly List<string> newSong = new();
         public static int PrevFreq { get; set; }
         static readonly Stopwatch stopWatch = new();
@@ -56,6 +57,64 @@ namespace BeeperPiano
             return (int)Math.Round(dobleFreg);
         }
 
+        public static int GetFrequency(ConsoleKey key)
+        {
+            double toneIndex;
+            if (key == ConsoleKey.Q)
+            { toneIndex = 0; }
+            else if (key == ConsoleKey.A)
+            { toneIndex = 1; }
+            else if (key == ConsoleKey.W)
+            { toneIndex = 3; }
+            else if (key == ConsoleKey.S)
+            { toneIndex = 4; }
+            else if (key == ConsoleKey.E)
+            { toneIndex = 5; }
+            else if (key == ConsoleKey.D)
+            { toneIndex = 6; }
+            else if (key == ConsoleKey.R)
+            { toneIndex = 7; }
+            else if(key == ConsoleKey.F)
+            { toneIndex = 8; }
+            else if (key == ConsoleKey.T)
+            { toneIndex = 9; }
+            else if (key == ConsoleKey.G)
+            { toneIndex = 10; }
+            else if (key == ConsoleKey.Y)
+            { toneIndex = 11; }
+            else if (key == ConsoleKey.H)
+            { toneIndex = 12; }
+            else if (key == ConsoleKey.U)
+            { toneIndex = 13; }
+            else if (key == ConsoleKey.J)
+            { toneIndex = 14; }
+            else if (key == ConsoleKey.I)
+            { toneIndex = 15; }
+            else if (key == ConsoleKey.K)
+            { toneIndex = 16; }
+            else if (key == ConsoleKey.O)
+            { toneIndex = 17; }
+            else if (key == ConsoleKey.L)
+            { toneIndex = 18; }
+            else if (key == ConsoleKey.P)
+            { toneIndex = 19; }
+            else if (key == ConsoleKey.Oem1)
+            { toneIndex = 20; }
+            else if (key == ConsoleKey.Oem4)
+            { toneIndex = 21; }
+            else if (key == ConsoleKey.Oem7)
+            { toneIndex = 22; }
+            else if (key == ConsoleKey.Oem6)
+            { toneIndex = 23; }
+            else if (key == ConsoleKey.Oem5)
+            { toneIndex = 24; }
+            else { return 0; }
+
+            toneIndex += Pitch;
+            double power = toneIndex / 24;
+            double dobleFreg = etalonFrequency * Math.Pow(2, power);
+            return (int)Math.Round(dobleFreg);
+        }
         public static int GetFrequency(int percNum)
         {
             double dobleFreg = 100 * Math.Pow(2, percNum*0.63);
@@ -175,7 +234,36 @@ namespace BeeperPiano
             if (IsNotesAppear) { Console.Write("Percussion " + percNum + " "); }
         }
 
-        public static void RecPrevKey()
+        public static void PlayKeys(ConsoleKey key)
+        {
+            int freq = GetFrequency(key);
+            if (freq == 0) { Actions(); }
+            if (IsRecording && stopWatch.IsRunning)
+            { RecPrevKey(); }
+
+
+            if (freq < 37) { freq = 37; }
+            if (freq > 32767) { freq = 32767; }
+
+            if (IsRecording && !IsStacatto)
+            {
+                stopWatch.Start();
+                PrevFreq = freq;
+            }
+            Console.Beep(freq, Duration);
+
+            if (IsRecording && IsStacatto)
+            {
+                int recDuration = Duration;
+                string newNote = new("Console.Beep(" + freq + ", " + recDuration + ");");
+                newSong.Add(newNote);
+                IsPause = true;
+                stopWatch.Start();
+            }
+            Actions();
+        }
+    
+    public static void RecPrevKey()
         {
             stopWatch.Stop();
             int recDuration = (int)stopWatch.ElapsedMilliseconds;
@@ -291,15 +379,18 @@ namespace BeeperPiano
             { Console.WriteLine("F6 key to stop recording."); }
             Console.WriteLine(
         "F9 to open song player menu.\n" +
+        "F12 key to switch betwin halftone/quadtone mode. Now quadtone is " + IsQuadtone + ".");
+            Console.WriteLine(
         "Press Escape to quit.\n");
             Actions();
         }
         public static void Actions()
         {
             ConsoleKey key = Console.ReadKey(true).Key;
-            if (key == ConsoleKey.Escape) {
+            if (key == ConsoleKey.Escape)
+            {
                 if (IsRecording) { StopRec(); }
-                else Environment.Exit(0); 
+                else Environment.Exit(0);
             }
             else if (key == ConsoleKey.F1) { Information(); }
             else if (key == ConsoleKey.F2) { SetSoundDuration(); }
@@ -308,26 +399,8 @@ namespace BeeperPiano
             else if (key == ConsoleKey.F5) { StartRec(); }
             else if (key == ConsoleKey.F6) { StopRec(); }
             else if (key == ConsoleKey.F9) { PlayerMenu(); }
-            else if (key == ConsoleKey.A) { PlayKeys("C4"); Actions(); }
-            else if (key == ConsoleKey.W) { PlayKeys("C#4"); Actions(); }
-            else if (key == ConsoleKey.S) { PlayKeys("D4"); Actions(); }
-            else if (key == ConsoleKey.E) { PlayKeys("D#4"); Actions(); }
-            else if (key == ConsoleKey.D) { PlayKeys("E4"); Actions(); }
-            else if (key == ConsoleKey.F) { PlayKeys("F4"); Actions(); }
-            else if (key == ConsoleKey.T) { PlayKeys("F#4"); Actions(); }
-            else if (key == ConsoleKey.G) { PlayKeys("G4"); Actions(); }
-            else if (key == ConsoleKey.Y) { PlayKeys("G#4"); Actions(); }
-            else if (key == ConsoleKey.H) { PlayKeys("A4"); Actions(); }
-            else if (key == ConsoleKey.U) { PlayKeys("A#4"); Actions(); }
-            else if (key == ConsoleKey.J) { PlayKeys("B4"); Actions(); }
-            else if (key == ConsoleKey.K) { PlayKeys("C5"); Actions(); }
-            else if (key == ConsoleKey.O) { PlayKeys("C#5"); Actions(); }
-            else if (key == ConsoleKey.L) { PlayKeys("D5"); Actions(); }
-            else if (key == ConsoleKey.P) { PlayKeys("D#5"); Actions(); }
-            else if (key == ConsoleKey.Oem1) { PlayKeys("E5"); Actions(); }
-            else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
-            else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
-            else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
+            else if (key == ConsoleKey.F12) { IsQuadtone = !IsQuadtone; Actions(); }
+
             else if (key == ConsoleKey.Spacebar) { PlayKeys(0); Actions(); }
             else if (key == ConsoleKey.Z) { PlayKeys(1); Actions(); }
             else if (key == ConsoleKey.X) { PlayKeys(2); Actions(); }
@@ -340,6 +413,7 @@ namespace BeeperPiano
             else if (key == ConsoleKey.OemPeriod) { PlayKeys(9); Actions(); }
             else if (key == ConsoleKey.Oem2) { PlayKeys(10); Actions(); }
             else if (key == ConsoleKey.Enter) { PlayKeys(11); Actions(); }
+
             else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; Actions(); }
             else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
             else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
@@ -360,15 +434,23 @@ namespace BeeperPiano
             else if (key == ConsoleKey.NumPad8) { Duration = 700; Actions(); }
             else if (key == ConsoleKey.NumPad9) { Duration = 800; Actions(); }
             else if (key == ConsoleKey.OemMinus)
-            { if (Pitch > -30) { Pitch--;
+            {
+                if (Pitch > -30)
+                {
+                    Pitch--;
                     Console.WriteLine("Pitch shift set to " + Pitch + " ");
-                    Menu(); }
+                    Menu();
+                }
                 else { Actions(); }
             }
             else if (key == ConsoleKey.OemPlus)
-            { if (Pitch < 60) { Pitch++;
+            {
+                if (Pitch < 60)
+                {
+                    Pitch++;
                     Console.WriteLine("Pitch shift set to " + Pitch + " ");
-                    Menu(); }
+                    Menu();
+                }
                 else { Actions(); }
             }
             else if (key == ConsoleKey.DownArrow)
@@ -379,7 +461,7 @@ namespace BeeperPiano
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-                else if(Duration > 500)
+                else if (Duration > 500)
                 {
                     Duration -= 50;
                     Console.WriteLine("Duration set to " + Duration + " ");
@@ -407,25 +489,25 @@ namespace BeeperPiano
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-                else if(Duration < 75)
+                else if (Duration < 75)
                 {
                     Duration += 10;
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-                else if(Duration < 200)
+                else if (Duration < 200)
                 {
                     Duration += 25;
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-                else if(Duration < 400)
+                else if (Duration < 400)
                 {
                     Duration += 45;
                     Console.WriteLine("Duration set to " + Duration + " ");
                     Menu();
                 }
-                else if(Duration < 700)
+                else if (Duration < 700)
                 {
                     Duration += 75;
                     Console.WriteLine("Duration set to " + Duration + " ");
@@ -439,7 +521,31 @@ namespace BeeperPiano
                 }
                 else { Actions(); }
             }
-            else { Actions(); }
+            else if (!IsQuadtone)
+            {
+                if (key == ConsoleKey.A) { PlayKeys("C4"); Actions(); }
+                else if (key == ConsoleKey.W) { PlayKeys("C#4"); Actions(); }
+                else if (key == ConsoleKey.S) { PlayKeys("D4"); Actions(); }
+                else if (key == ConsoleKey.E) { PlayKeys("D#4"); Actions(); }
+                else if (key == ConsoleKey.D) { PlayKeys("E4"); Actions(); }
+                else if (key == ConsoleKey.F) { PlayKeys("F4"); Actions(); }
+                else if (key == ConsoleKey.T) { PlayKeys("F#4"); Actions(); }
+                else if (key == ConsoleKey.G) { PlayKeys("G4"); Actions(); }
+                else if (key == ConsoleKey.Y) { PlayKeys("G#4"); Actions(); }
+                else if (key == ConsoleKey.H) { PlayKeys("A4"); Actions(); }
+                else if (key == ConsoleKey.U) { PlayKeys("A#4"); Actions(); }
+                else if (key == ConsoleKey.J) { PlayKeys("B4"); Actions(); }
+                else if (key == ConsoleKey.K) { PlayKeys("C5"); Actions(); }
+                else if (key == ConsoleKey.O) { PlayKeys("C#5"); Actions(); }
+                else if (key == ConsoleKey.L) { PlayKeys("D5"); Actions(); }
+                else if (key == ConsoleKey.P) { PlayKeys("D#5"); Actions(); }
+                else if (key == ConsoleKey.Oem1) { PlayKeys("E5"); Actions(); }
+                else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
+                else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
+                else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
+            }
+
+            else { PlayKeys(key); }
         }
         public static void SwitchNotesAppearing() {
             IsNotesAppear = !IsNotesAppear;
@@ -671,6 +777,7 @@ namespace BeeperPiano
             Tempo = 70;
             Pitch = 0;
             Duration = 150;
+            IsQuadtone = false;
             IsNotesAppear = false;
             IsStacatto = false;
             IsRecording = false;
