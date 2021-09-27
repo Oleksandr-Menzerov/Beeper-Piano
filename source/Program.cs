@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,10 +14,12 @@ namespace BeeperPiano
         public static int Tempo { get; set; }
         public static int Pitch { get; set; }
         public static int Duration { get; set; }
-        public static bool NotesAppear { get; set; }
-        public static bool DurationTimer { get; set; }
-        public static bool Recording { get; set; }
+        public static bool IsNotesAppear { get; set; }
+        public static bool IsStacatto { get; set; }
+        public static bool IsPause { get; set; }
+        public static bool IsRecording { get; set; }
         public static readonly List<string> newSong = new();
+        public static int PrevFreq { get; set; }
         static readonly Stopwatch stopWatch = new();
         public static readonly string startMelody = new("C5 1/8., B4 1/8., A4 1/8., G4 1/8., F4 1/8., E4 1/8., D4 1/8., C4 1/4, pause 1/4, C5 1/2");
 
@@ -51,6 +53,12 @@ namespace BeeperPiano
             toneIndex = toneIndex + (int.Parse(toneName.Last().ToString()) - 4) * 12 + Pitch;
             double power = toneIndex / 12;
             double dobleFreg = etalonFrequency * Math.Pow(2, power);
+            return (int)Math.Round(dobleFreg);
+        }
+
+        public static int GetFrequency(int percNum)
+        {
+            double dobleFreg = 85 * Math.Pow(2, percNum*0.9);
             return (int)Math.Round(dobleFreg);
         }
 
@@ -124,54 +132,75 @@ namespace BeeperPiano
 
         public static void PlayKeys(string note)
         {
-
-            if (Recording&& !DurationTimer&& stopWatch.IsRunning)
-            {
-                    stopWatch.Stop();
-                    int recDuration = (int)stopWatch.ElapsedMilliseconds;
-                    stopWatch.Reset();
-                    if (recDuration > 2000) { recDuration = 2000; }
-                    string newNote = new("Thread.Sleep("+recDuration+");");
-                    newSong.Add(newNote);
-            }
+            if (IsRecording && stopWatch.IsRunning)
+            { RecPrevKey(); }
 
             int freq = GetFrequency(note);
             if (freq < 37) { freq = 37; }
             if (freq > 32767) { freq = 32767; }
+
+            if (IsRecording && !IsStacatto)
+            {
+                stopWatch.Start();
+                PrevFreq = freq;
+            }
             Console.Beep(freq, Duration);
 
-            if (Recording)
+            if (IsRecording && IsStacatto)
             {
                 int recDuration = Duration;
-                if (DurationTimer)
-                {
-                    stopWatch.Stop();
-                    recDuration = (int)stopWatch.ElapsedMilliseconds;
-                    stopWatch.Reset();
-                    stopWatch.Start();
-                }
-                if (recDuration > 2000) { recDuration = 2000; }
-                if (freq < 37) { freq = 37; }
-                if (freq > 32767) { freq = 32767; }
                 string newNote = new("Console.Beep("+ freq+", " + recDuration + ");");
                 newSong.Add(newNote);
-                if (!DurationTimer)
-                {
-                    stopWatch.Start();
-                }
+                IsPause = true;
+                stopWatch.Start();
             }
-
-            if (NotesAppear) { Console.Write(note.Remove(note.Length - 1) + " "); }
-
+            if (IsNotesAppear) { Console.Write(note.Remove(note.Length - 1) + " "); }
         }
 
+        public static void PlayKeys(int percNum)
+        {
+            if (IsRecording && stopWatch.IsRunning)
+            { RecPrevKey(); }
+
+            int freq = GetFrequency(percNum);
+            int recDuration = 10;
+            if (IsRecording)
+            {
+                string newNote = new("Console.Beep(" + freq + ", " + recDuration + ");");
+                newSong.Add(newNote);
+                stopWatch.Start();
+                IsPause = true;
+            }
+            Console.Beep(freq, recDuration);
+            if (IsNotesAppear) { Console.Write("Percussion " + percNum + " "); }
+        }
+
+        public static void RecPrevKey()
+        {
+            stopWatch.Stop();
+            int recDuration = (int)stopWatch.ElapsedMilliseconds;
+            stopWatch.Reset();
+
+            if (IsPause)
+            {
+                if (recDuration > 2000) { recDuration = 2000; }
+                string newNote = new("Thread.Sleep(" + recDuration + ");");
+                newSong.Add(newNote);
+                IsPause = false;
+            }
+            else
+            {
+                string newNote = new("Console.Beep(" + PrevFreq + ", " + recDuration + ");");
+                newSong.Add(newNote);
+            }
+        }  
+
         public static void StartRec() {
-            if (!Recording)
+            if (!IsRecording)
             {
                 if (newSong.Count>0) { newSong.Clear(); }
-                Recording = true;
+                IsRecording = true;
                 Console.WriteLine("Recording is started!");
-                if (DurationTimer) { stopWatch.Start(); }
                 Menu();
             }
             else Actions();
@@ -179,11 +208,10 @@ namespace BeeperPiano
 
         public static void StopRec()
         {
-            if (Recording)
+            if (IsRecording)
             {
-                if (stopWatch.IsRunning) { stopWatch.Stop(); }
-                stopWatch.Reset();
-                Recording = false;
+                RecPrevKey();
+                IsRecording = false;
                 Console.WriteLine("\nSong recording is ends\n");
                 NewSongMenu();
             }
@@ -246,6 +274,7 @@ namespace BeeperPiano
         public static void Menu() {
             Console.WriteLine(
         "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
+        "Z-M for percussions.\n" +
         "1-9 keys set pich shift in octavas.\n" +
         "Minus and Plus keys adjust pich shift in halftones.\n" +
         "Num 0 - Num 9 keys set note duration as 5, 10, 100, 200, 300, 400, 500, 600, 700, 800.\n" +
@@ -255,10 +284,10 @@ namespace BeeperPiano
             Console.WriteLine(
         "F2 key for adjust sound duration. Current sound duration is " + Duration + ".");
             Console.WriteLine(
-        "F3 key for turn on/off notes names appearing in console. Current note appearing is " + NotesAppear + ".");
+        "F3 key for turn on/off notes names appearing in console. Current note appearing is " + IsNotesAppear + ".");
             Console.WriteLine(
-        "F4 key to switch between legatto/stacatto recording. Now stakatto is " + DurationTimer + ".");
-            if (!Recording)
+        "F4 key to turn on/off stacatto recording. Now stacatto is " + IsStacatto + ".");
+            if (!IsRecording)
             { Console.WriteLine("F5 key to start recording."); }
             else
             { Console.WriteLine("F6 key to stop recording."); }
@@ -270,7 +299,10 @@ namespace BeeperPiano
         public static void Actions()
         {
             ConsoleKey key = Console.ReadKey(true).Key;
-            if (key == ConsoleKey.Escape) { Environment.Exit(0); }
+            if (key == ConsoleKey.Escape) {
+                if (IsRecording) { StopRec(); }
+                else Environment.Exit(0); 
+            }
             else if (key == ConsoleKey.F1) { Information(); }
             else if (key == ConsoleKey.F2) { SetSoundDuration(); }
             else if (key == ConsoleKey.F3) { SwitchNotesAppearing(); }
@@ -298,6 +330,16 @@ namespace BeeperPiano
             else if (key == ConsoleKey.Oem7) { PlayKeys("F5"); Actions(); }
             else if (key == ConsoleKey.Oem6) { PlayKeys("F#5"); Actions(); }
             else if (key == ConsoleKey.Oem5) { PlayKeys("G5"); Actions(); }
+            else if (key == ConsoleKey.Z) { PlayKeys(0); Actions(); }
+            else if (key == ConsoleKey.X) { PlayKeys(1); Actions(); }
+            else if (key == ConsoleKey.C) { PlayKeys(2); Actions(); }
+            else if (key == ConsoleKey.V) { PlayKeys(3); Actions(); }
+            else if (key == ConsoleKey.B) { PlayKeys(4); Actions(); }
+            else if (key == ConsoleKey.N) { PlayKeys(5); Actions(); }
+            else if (key == ConsoleKey.M) { PlayKeys(6); Actions(); }
+            else if (key == ConsoleKey.OemComma) { PlayKeys(7); Actions(); }
+            else if (key == ConsoleKey.OemPeriod) { PlayKeys(8); Actions(); }
+            else if (key == ConsoleKey.Oem2) { PlayKeys(9); Actions(); }
             else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; Actions(); }
             else if (key == ConsoleKey.D1) { Pitch = -36; Actions(); }
             else if (key == ConsoleKey.D2) { Pitch = -24; Actions(); }
@@ -400,15 +442,15 @@ namespace BeeperPiano
             else { Actions(); }
         }
         public static void SwitchNotesAppearing() {
-            NotesAppear = !NotesAppear;
-            if (NotesAppear) { Console.WriteLine("Notes apearing is turned on.\n"); }
+            IsNotesAppear = !IsNotesAppear;
+            if (IsNotesAppear) { Console.WriteLine("Notes apearing is turned on.\n"); }
             else { Console.WriteLine("Notes apearing is turned off.\n"); }
             Menu();
         }
         public static void SwitchDurationTimer()
         {
-            DurationTimer = !DurationTimer;
-            if (DurationTimer) { Console.WriteLine("Legatto recording is turned on.\n"); }
+            IsStacatto = !IsStacatto;
+            if (!IsStacatto) { Console.WriteLine("Legatto recording is turned on.\n"); }
             else { Console.WriteLine("Stacatto recording is turned on.\n"); }
             Menu();
         }
@@ -629,9 +671,10 @@ namespace BeeperPiano
             Tempo = 70;
             Pitch = 0;
             Duration = 150;
-            NotesAppear = false;
-            DurationTimer = true;
-            Recording = false;
+            IsNotesAppear = false;
+            IsStacatto = false;
+            IsRecording = false;
+            IsPause = false;
             PlayBeeps(startMelody);
             Menu();
         }
