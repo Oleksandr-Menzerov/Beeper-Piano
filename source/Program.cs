@@ -28,7 +28,7 @@ namespace BeeperPiano
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(error);
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.Beep();
         }
         public static int GetFrequency(string toneName)
@@ -335,7 +335,7 @@ namespace BeeperPiano
             {
                 ErrorMessage("Are you shure you want to quit? All unsaved data will be lost! Type Y or N");
                 string answer = Console.ReadLine();
-                if (answer.ToLower() == "y")
+                if (answer.ToLower() == "y"|| answer.ToLower() == "н")
                 { Menu(); }
                 else { NewSongMenu(); }
             }
@@ -588,7 +588,6 @@ namespace BeeperPiano
             else
             {
                 ErrorMessage("Invalid data!");
-                Console.ForegroundColor = ConsoleColor.Red;
                 SetSoundDuration();
             }
         }
@@ -641,10 +640,8 @@ namespace BeeperPiano
                     PlayerMenu();
             }
             else {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid data!");
-                Console.ResetColor();
-                Console.Beep();
+
+                ErrorMessage("Invalid data!");
                 SetUpPitchShift();
             }
         }
@@ -787,6 +784,7 @@ namespace BeeperPiano
         }
         static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Hello! It is a Beeper Piano! Enjoy!\n" + "\n");
             Tempo = 70;
             Pitch = 0;
