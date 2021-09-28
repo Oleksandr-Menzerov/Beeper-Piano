@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -230,7 +230,8 @@ namespace BeeperPiano
         public static void PlayBeeps(string song)
         {
             if (OctavaStops != 12)
-            { Console.WriteLine("Song in American notation system. Stops in octava will be set to 12."); OctavaStops = 12; }
+            { Console.WriteLine("Song in American notation system. Stops in octava will be set to 12."); 
+              OctavaStops = 12; OctavaShift = 12; }
 
             string[] notes = song.Split(", ");
             for (int i = 0; i < notes.Length; i++)
