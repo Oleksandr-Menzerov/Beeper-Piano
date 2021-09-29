@@ -348,8 +348,11 @@ namespace BeeperPiano
             if (IsPause)
             {
                 if (recDuration > 2000) { recDuration = 2000; }
-                string newNote = new("Thread.Sleep(" + recDuration + ");");
-                newSong.Add(newNote);
+                if (recDuration > 0)
+                {
+                    string newNote = new("Thread.Sleep(" + recDuration + ");");
+                    newSong.Add(newNote);
+                }
                 IsPause = false;
             }
             else
@@ -463,7 +466,7 @@ namespace BeeperPiano
             }
             else if (key == ConsoleKey.F1) { Information(); }
             else if (key == ConsoleKey.F2) { SetSoundDuration(); BWMenu(); }
-            else if (key == ConsoleKey.F4) { IsStacatto = !IsStacatto; }
+            else if (key == ConsoleKey.F4) { IsStacatto = !IsStacatto; BWMenu(); }
 
             else if (key == ConsoleKey.F5) { if (!IsRecording) { StartRec(); BWMenu(); } else BWActions(); }
             else if (key == ConsoleKey.F6) { if (IsRecording) StopRec(); else BWActions(); }
