@@ -348,7 +348,7 @@ namespace BeeperPiano
             if (IsPause)
             {
                 if (recDuration > 2000) { recDuration = 2000; }
-                if (recDuration > 0)
+                if (recDuration > 1)
                 {
                     string newNote = new("Thread.Sleep(" + recDuration + ");");
                     newSong.Add(newNote);
