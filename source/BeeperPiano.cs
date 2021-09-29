@@ -13,13 +13,14 @@ namespace BeeperPiano
         public const int milliseconds = 60000;
         public static int Tempo { get; set; }
         public static int Pitch { get; set; }
+        public static int OctavaPitch { get; set; }
         public static int Duration { get; set; }
-        public static bool IsNotesAppear { get; set; }
         public static bool IsStacatto { get; set; }
         public static bool IsPause { get; set; }
         public static bool IsRecording { get; set; }
         public static int OctavaStops { get; set; }
         public static int OctavaShift { get; set; }
+
         public static readonly List<string> newSong = new();
         public static bool IsQuerty { get; set; }
         public static int PrevFreq { get; set; }
@@ -32,6 +33,20 @@ namespace BeeperPiano
             Console.WriteLine(error);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Beep();
+        }
+
+        public static void InfoMessage(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(msg);
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
+
+        public static void InfoString(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(msg);
+            Console.ForegroundColor = ConsoleColor.Green;
         }
 
         public static void SetStopsInOctava()
@@ -53,12 +68,12 @@ namespace BeeperPiano
                     { OctavaShift =  20; }
                     else { OctavaShift = OctavaStops; }
 
-                    Console.WriteLine("New octava stops count is " + OctavaStops + " .");
+                    InfoMessage("New octava stops count is " + OctavaStops + " .");
                     if (IsQuerty) QWMenu(); else BWMenu();
                 }
                 else
                 {
-                    Console.WriteLine("Invalid data!");
+                    ErrorMessage("Invalid data!");
                 }
             }
         }
@@ -195,7 +210,7 @@ namespace BeeperPiano
                 else { return 0; }
             }
 
-            toneIndex = toneIndex + Pitch - OctavaShift;
+            toneIndex = toneIndex + Pitch + OctavaPitch - OctavaShift;
             double power = toneIndex / OctavaStops;
             double dobleFreg = etalonFrequency * Math.Pow(2, power);
             return (int)Math.Round(dobleFreg);
@@ -230,7 +245,7 @@ namespace BeeperPiano
         public static void PlayBeeps(string song)
         {
             if (OctavaStops != 12)
-            { Console.WriteLine("Song in American notation system. Stops in octava will be set to 12."); 
+            { InfoMessage("Song in American notation system. Stops in octava will be set to 12."); 
               OctavaStops = 12; OctavaShift = 12; }
 
             string[] notes = song.Split(", ");
@@ -294,7 +309,6 @@ namespace BeeperPiano
                 IsPause = true;
             }
             Console.Beep(freq, recDuration);
-            if (IsNotesAppear) { Console.Write("Percussion " + percNum + " "); }
         }
 
         public static void PlayKeys(ConsoleKey key)
@@ -344,18 +358,17 @@ namespace BeeperPiano
                 newSong.Add(newNote);
             }
         }  
-
         public static void StartRec() {
                 if (newSong.Count>0) { newSong.Clear(); }
                 IsRecording = true;
-                Console.WriteLine("Recording is started!");
+                InfoMessage("Recording is started!");
         }
 
         public static void StopRec()
         {
                 RecPrevKey();
                 IsRecording = false;
-                Console.WriteLine("\nSong recording is ends\n");
+                InfoMessage("\nSong recording is ends\n");
                 NewSongMenu();
         }
 
@@ -387,7 +400,7 @@ namespace BeeperPiano
         }
         public static void SaveNewSong()
         {
-            Console.WriteLine("Type a name of your song:");
+            InfoMessage("Type a name of your song:");
             string name = Console.ReadLine();
             char[] invalidPathChars = Path.GetInvalidPathChars();
             foreach (char invalidChar in invalidPathChars)
@@ -405,7 +418,7 @@ namespace BeeperPiano
                 else 
                 {
                     File.WriteAllLines(name + ".beepersong", newSong);
-                    Console.WriteLine("Congratulations! The file "+ name + ".beepersong is saved! You can play it using built-in player or use in your program code!");
+                    InfoMessage("Congratulations! The file "+ name + ".beepersong is saved! You can play it using built-in player or use in your program code!");
                 }
                 BWMenu();
             }
@@ -413,26 +426,29 @@ namespace BeeperPiano
 
           public static void BWMenu()
         {
-            Console.WriteLine(
-        "A-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
+            Console.Write(
+        "\nA-L for white keys. W, E, T, Y, U, O, P for black keys.\n" +
         "Spacebar, Enter and Z-M for percussions.\n" +
-        "1-9 keys set pich shift in octavas.\n" +
-        "Minus and Plus keys adjust pich shift in halftones.\n" +
-        "Num 0 - Num 9 keys set note duration.\n" +
+        "1-9 keys set pich shift in octavas.");
+            Console.Write(
+        "\nMinus and Plus keys adjust pich shift. Now pitch shift is "); InfoString(Pitch + ".\n");
+            Console.WriteLine(
+         "Num 0 - Num 9 keys set note duration.\n" +
         "UpArrow and DownArrow keys adjust duration.");
             Console.WriteLine(
         "F1 key for information.");
-            Console.WriteLine(
-        "F2 key for adjust sound duration. Current sound duration is " + Duration + ".\n" +
-        "F4 key to turn on/off stacatto recording. Now stacatto is " + IsStacatto + ".");
+            Console.Write(
+        "F2 key for adjust sound duration. Current sound duration is "); InfoString(Duration + ".\n");
+            Console.Write(
+        "F4 key to turn on/off stacatto recording. Now stacatto is "); InfoString(IsStacatto + ".\n");
             if (!IsRecording)
             { Console.WriteLine("F5 key to start recording."); }
             else
             { Console.WriteLine("F6 key to stop recording."); }
-            Console.WriteLine(
+            Console.Write(
         "F9 to open song player menu.\n" +
         "F10 to switch to 24 keys QERTY keyboard.\n" +
-        "F12 key to change number of stops in octava. Now in octava " + OctavaStops + " stop(s).");
+        "F12 key to change number of stops in octava. Now in octava "); InfoString(OctavaStops + " stop(s).\n");
             Console.WriteLine(
         "Press Escape to quit.\n");
             BWActions();
@@ -446,23 +462,24 @@ namespace BeeperPiano
                 else Environment.Exit(0);
             }
             else if (key == ConsoleKey.F1) { Information(); }
-            else if (key == ConsoleKey.F2) { SetSoundDuration(); }
-            else if (key == ConsoleKey.F3) { SwitchNotesAppearing(); }
-            else if (key == ConsoleKey.F4) { SwitchDurationTimer(); }
+            else if (key == ConsoleKey.F2) { SetSoundDuration(); BWMenu(); }
+            else if (key == ConsoleKey.F4) { IsStacatto = !IsStacatto; }
 
             else if (key == ConsoleKey.F5) { if (!IsRecording) { StartRec(); BWMenu(); } else BWActions(); }
             else if (key == ConsoleKey.F6) { if (IsRecording) StopRec(); else BWActions(); }
             else if (key == ConsoleKey.F9) { PlayerMenu(); }
             else if (key == ConsoleKey.F10) { IsQuerty = true; QWMenu(); }
            
-            else if (key == ConsoleKey.D1) { Pitch = -3* OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D2) { Pitch = -2* OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D3) { Pitch = -OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D5) { Pitch = OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D6) { Pitch = 2* OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D7) { Pitch = 3* OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D8) { Pitch = 4* OctavaShift; BWActions(); }
-            else if (key == ConsoleKey.D9) { Pitch = 5* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D1) { OctavaPitch = -3* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D2) { OctavaPitch = -2* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D3) { OctavaPitch = -OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D4) { OctavaPitch = 0; BWActions(); }
+            else if (key == ConsoleKey.D5) { OctavaPitch = OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D6) { OctavaPitch = 2* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D7) { OctavaPitch = 3* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D8) { OctavaPitch = 4* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D9) { OctavaPitch = 5* OctavaShift; BWActions(); }
+            else if (key == ConsoleKey.D0) { OctavaPitch = 0; Pitch = 0; BWMenu(); }
             else if (key == ConsoleKey.F12) { SetStopsInOctava(); }
 
             else if (key == ConsoleKey.Spacebar) { PlayKeys(0); BWActions(); }
@@ -477,7 +494,6 @@ namespace BeeperPiano
             else if (key == ConsoleKey.OemPeriod) { PlayKeys(9); BWActions(); }
             else if (key == ConsoleKey.Oem2) { PlayKeys(10); BWActions(); }
             else if (key == ConsoleKey.Enter) { PlayKeys(11); BWActions(); }
-            else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; BWActions(); }
             else if (key == ConsoleKey.NumPad0) { Duration = 5; BWActions(); }
             else if (key == ConsoleKey.NumPad1) { Duration = 10; BWActions(); }
             else if (key == ConsoleKey.NumPad2) { Duration = 100; BWActions(); }
@@ -490,20 +506,18 @@ namespace BeeperPiano
             else if (key == ConsoleKey.NumPad9) { Duration = 800; BWActions(); }
             else if (key == ConsoleKey.OemMinus)
             {
-                if (Pitch > -30)
+                if (Pitch > -OctavaShift)
                 {
                     Pitch--;
-                    Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     BWMenu();
                 }
                 else { BWActions(); }
             }
             else if (key == ConsoleKey.OemPlus)
             {
-                if (Pitch < 60)
+                if (Pitch < OctavaShift)
                 {
                     Pitch++;
-                    Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     BWMenu();
                 }
                 else { BWActions(); }
@@ -512,8 +526,7 @@ namespace BeeperPiano
             {
                 if (Duration > 3)
                 {
-                    Duration = (int)(Convert.ToDouble(Duration) * 0.9);
-                    Console.WriteLine("Duration set to " + Duration + " ");
+                    Duration = (int)Math.Round(Convert.ToDouble(Duration) * 0.9);
                     BWMenu();
                 }
                 else { BWActions(); }
@@ -522,8 +535,7 @@ namespace BeeperPiano
             {
                 if (Duration < 1000)
                 {
-                    Duration = (int)(Convert.ToDouble(Duration) * 1.1);
-                    Console.WriteLine("Duration set to " + Duration + " ");
+                    Duration = (int)Math.Round(Convert.ToDouble(Duration) * 1.167);
                     BWMenu();
                 }
                 else { BWActions(); }
@@ -536,26 +548,28 @@ namespace BeeperPiano
             Console.WriteLine(
         "Q and A keyboard lines for play notes.\n" +
         "Spacebar, Enter and Z-M for percussions.\n" +
-        "1-9 keys set pich shift in octavas.\n" +
-        "Minus and Plus keys adjust pich shift in halftones.\n" +
+        "1-9 keys set pich shift in octavas.");
+            Console.Write(
+        "Minus and Plus keys adjust pich shift. Now pitch shift is "); InfoString(Pitch + ".\n");
+            Console.WriteLine(
         "Num 0 - Num 9 keys set note duration.\n" +
         "UpArrow and DownArrow keys adjust duration.");
             Console.WriteLine(
         "F1 key for information.");
-            Console.WriteLine(
-        "F2 key for adjust sound duration. Current sound duration is " + Duration + ".");
-            Console.WriteLine(
-        "F4 key to turn on/off stacatto recording. Now stacatto is " + IsStacatto + ".");
+            Console.Write(
+        "F2 key for adjust sound duration. Current sound duration is "); InfoString(Duration + ".\n");
+            Console.Write(
+        "F4 key to turn on/off stacatto recording. Now stacatto is "); InfoString(IsStacatto + ".\n");
             if (!IsRecording)
             { Console.WriteLine("F5 key to start recording."); }
             else
             { Console.WriteLine("F6 key to stop recording."); }
-            Console.WriteLine(
+            Console.Write(
         "F9 to open song player menu.\n" +
         "F10 to switch to classic black and white keyboard.\n" +
-        "F12 key to change number of stops in octava. Now in octava " + OctavaStops + " stop(s).");
+        "F12 key to change number of stops in octava. Now in octava "); InfoString(OctavaStops + " stop(s).");
             Console.WriteLine(
-        "Press Escape to quit.\n");
+        "\nPress Escape to quit.\n");
             QWActions();
         }
         public static void QWActions()
@@ -568,21 +582,23 @@ namespace BeeperPiano
             }
             else if (key == ConsoleKey.F1) { Information(); }
             else if (key == ConsoleKey.F2) { SetSoundDuration(); }
-            else if (key == ConsoleKey.F4) { SwitchDurationTimer(); }
+            else if (key == ConsoleKey.F4) { IsStacatto = !IsStacatto; QWMenu(); }
             else if (key == ConsoleKey.F5) { if (!IsRecording) { StartRec(); QWMenu(); } else QWActions(); }
             else if (key == ConsoleKey.F6) { if (IsRecording) StopRec(); else QWActions(); }
             else if (key == ConsoleKey.F9) { PlayerMenu(); }
             else if (key == ConsoleKey.F10) { IsQuerty = false; BWMenu(); }
             else if (key == ConsoleKey.F12) { SetStopsInOctava(); }
 
-            else if (key == ConsoleKey.D1) { Pitch = -3 * OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D2) { Pitch = -2 * OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D3) { Pitch = -OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D5) { Pitch = OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D6) { Pitch = 2 * OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D7) { Pitch = 3 * OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D8) { Pitch = 4 * OctavaShift; QWActions(); }
-            else if (key == ConsoleKey.D9) { Pitch = 5 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D1) { OctavaPitch = -3 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D2) { OctavaPitch = -2 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D3) { OctavaPitch = -OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D4) { OctavaPitch = 0; QWActions(); }
+            else if (key == ConsoleKey.D5) { OctavaPitch = OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D6) { OctavaPitch = 2 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D7) { OctavaPitch = 3 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D8) { OctavaPitch = 4 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D9) { OctavaPitch = 5 * OctavaShift; QWActions(); }
+            else if (key == ConsoleKey.D0) { OctavaPitch = 0; Pitch = 0; QWMenu(); }
 
             else if (key == ConsoleKey.Spacebar) { PlayKeys(0); QWActions(); }
             else if (key == ConsoleKey.Z) { PlayKeys(1); QWActions(); }
@@ -596,7 +612,6 @@ namespace BeeperPiano
             else if (key == ConsoleKey.OemPeriod) { PlayKeys(9); QWActions(); }
             else if (key == ConsoleKey.Oem2) { PlayKeys(10); QWActions(); }
             else if (key == ConsoleKey.Enter) { PlayKeys(11); QWActions(); }
-            else if (key == ConsoleKey.D0 || key == ConsoleKey.D4) { Pitch = 0; QWActions(); }
             else if (key == ConsoleKey.NumPad0) { Duration = 5; QWActions(); }
             else if (key == ConsoleKey.NumPad1) { Duration = 10; QWActions(); }
             else if (key == ConsoleKey.NumPad2) { Duration = 100; QWActions(); }
@@ -609,20 +624,18 @@ namespace BeeperPiano
             else if (key == ConsoleKey.NumPad9) { Duration = 800; QWActions(); }
             else if (key == ConsoleKey.OemMinus)
             {
-                if (Pitch > -30)
+                if (Pitch > -OctavaShift)
                 {
                     Pitch--;
-                    Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     QWMenu();
                 }
                 else { QWActions(); }
             }
             else if (key == ConsoleKey.OemPlus)
             {
-                if (Pitch < 60)
+                if (Pitch < OctavaShift)
                 {
                     Pitch++;
-                    Console.WriteLine("Pitch shift set to " + Pitch + " ");
                     QWMenu();
                 }
                 else { QWActions(); }
@@ -631,8 +644,7 @@ namespace BeeperPiano
             {
                 if (Duration > 3)
                 {
-                    Duration = (int)(Convert.ToDouble(Duration) * 0.9);
-                    Console.WriteLine("Duration set to " + Duration + " ");
+                    Duration = (int)Math.Round(Convert.ToDouble(Duration) * 0.9);
                     QWMenu();
                 }
                 else { QWActions(); }
@@ -641,8 +653,7 @@ namespace BeeperPiano
             {
                 if (Duration < 1000)
                 {
-                    Duration = (int)(Convert.ToDouble(Duration) * 1.1);
-                    Console.WriteLine("Duration set to " + Duration + " ");
+                    Duration = (int)Math.Round(Convert.ToDouble(Duration) * 1.167);
                     QWMenu();
                 }
                 else { QWActions(); }
@@ -650,28 +661,15 @@ namespace BeeperPiano
           
             else { PlayKeys(key); }
         }
-        public static void SwitchNotesAppearing() {
-            IsNotesAppear = !IsNotesAppear;
-            if (IsNotesAppear) { Console.WriteLine("Notes apearing is turned on.\n"); }
-            else { Console.WriteLine("Notes apearing is turned off.\n"); }
-            BWMenu();
-        }
-        public static void SwitchDurationTimer()
-        {
-            IsStacatto = !IsStacatto;
-            if (!IsStacatto) { Console.WriteLine("Legatto recording is turned on.\n"); }
-            else { Console.WriteLine("Stacatto recording is turned on.\n"); }
-            BWMenu();
-        }
         public static void SetSoundDuration()
         {
-            Console.WriteLine("Current sound duration is " + Duration + ". Type new duration (from 2 to 1000) and press Enter:");
+            InfoMessage("Current sound duration is " + Duration + ". Type new duration (from 2 to 1000) and press Enter:");
             string isDuration = Console.ReadLine();
             bool success = int.TryParse(isDuration, out int number);
             if (success && (number >= 2 && number <= 1000))
             {
                 Duration = number;
-                Console.WriteLine("New duration is " + Duration + "\n");
+                InfoMessage("New duration is " + Duration + "\n");
                 BWMenu();
             }
             else
@@ -700,15 +698,15 @@ namespace BeeperPiano
         }
         public static void SetUpTempo() 
         {
-            Console.WriteLine("Current tempo is " + Tempo);
-            Console.WriteLine("Set up the tempo (from 10 to 200): ");
+            InfoMessage("Current tempo is " + Tempo);
+            InfoMessage("Set up the tempo (from 10 to 200): ");
             string isTempo = Console.ReadLine();
 
             bool success = int.TryParse(isTempo, out int number);
             if (success&&(number >= 10 && number <= 200))
             {
                     Tempo = number;
-                    Console.WriteLine("New tempo is " + Tempo + "\n");
+                    InfoMessage("New tempo is " + Tempo + "\n");
                 PlayerMenu();
             }
             else {
@@ -718,14 +716,14 @@ namespace BeeperPiano
         }
         public static void SetUpPitchShift()
         {
-            Console.WriteLine("Current pich shift is " + Pitch);
-            Console.WriteLine("Set up the pitch shift (from -30 to 50): ");
+            InfoMessage("Current pich shift is " + Pitch);
+            InfoMessage("Set up the pitch shift (from -30 to 50): ");
             string isPitch = Console.ReadLine();
             bool success = int.TryParse(isPitch, out int number);
             if (success&&(number >= -30 && number <= 50))
             {
                     Pitch = number;
-                    Console.WriteLine("New pitch shift is " + Pitch + "\n");
+                    InfoMessage("New pitch shift is " + Pitch + "\n");
                     PlayerMenu();
             }
             else {
@@ -742,9 +740,9 @@ namespace BeeperPiano
             {
                 string[] pathToSong = entry.Split('\\');
                 string song = pathToSong.Last().Remove(pathToSong.Last().Length - 11);                
-                Console.WriteLine(song);
+                InfoMessage(song);
             }
-            Console.WriteLine("Type song name to start playing or Exit to return to player menu");
+            InfoMessage("Type song name to start playing or Exit to return to player menu");
             string songName = Console.ReadLine();
             if (songName.ToLower() == "exit"|| songName.ToLower() == "учше")
             { PlayerMenu(); }
@@ -769,7 +767,7 @@ namespace BeeperPiano
                         List<string> playSong = new(readSong);
                         if (IsFileValid(playSong))
                         {
-                            Console.WriteLine("Playing " + songName);
+                            InfoMessage("Playing " + songName);
                             PlayBeeps(playSong);
                         }
                         else
@@ -788,7 +786,7 @@ namespace BeeperPiano
                         if (IsFileValid(playSong))
 
                         {
-                            Console.WriteLine("Playing " + songName);
+                            InfoMessage("Playing " + songName);
                             PlayBeeps(playSong);
                         }
                         else
@@ -879,8 +877,8 @@ namespace BeeperPiano
                         "Play beeps, record beeps, reproduce beeps!\n");
             Tempo = 70;
             Pitch = 0;
+            OctavaPitch = 0;
             Duration = 150;
-            IsNotesAppear = false;
             IsStacatto = false;
             IsRecording = false;
             IsPause = false;
